@@ -83,6 +83,7 @@ def backward_feature_elimination(y, X, acceptable_difference=0.01):
 
   # Train model
   model = sm.OLS(y, X).fit()
+  dropped_columns = []
   
   while continue_elimination:
     # Get R-squared and adjusted R-squared values
@@ -98,9 +99,10 @@ def backward_feature_elimination(y, X, acceptable_difference=0.01):
       
       # Remove the feature from the model
       X = X.drop(columns=[max_p_value_feature])
+      dropped_columns.append(max_p_value_feature)
       print(f'Dropped feature {max_p_value_feature}')
       
       # Fit a new model with the updated set of features
       model = sm.OLS(y, X).fit()
 
-  return y, X
+  return y, X, dropped_columns
