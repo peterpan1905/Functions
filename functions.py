@@ -103,4 +103,4 @@ def backward_feature_elimination(y, X, acceptable_difference=0.01):
       # Fit a new model with the updated set of features
       model = sm.OLS(y, X).fit()
 
-  return model
+  return y, X
