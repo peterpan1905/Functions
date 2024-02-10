@@ -73,3 +73,34 @@ def vif(df):
     df_vif.loc[col] = vif
 
   return df_vif.sort_values(by=['vif'], ascending=False)
+
+
+def backward_feature_elimination(y, X, acceptable_difference=0.01):
+  import pandas as pd
+  import statsmodels.api as sm
+  # Initialize a flag to keep track of whether to continue the elimination process
+  continue_elimination = True
+
+  # Train model
+  model = sm.OLS(y, X).fit()
+  
+  while continue_elimination:
+    # Get R-squared and adjusted R-squared values
+    r_squared = model.rsquared
+    r_squared_adj = model.rsquared_adj
+    
+    # Check if the difference is greater than 0.01
+    if r_squared - r_squared_adj <= acceptable_difference:
+        continue_elimination = False
+    else:
+      # Find the feature with the highest p-value
+      max_p_value_feature = model.pvalues.idxmax()
+      
+      # Remove the feature from the model
+      X = X.drop(columns=[max_p_value_feature])
+      print(f'Dropped feature {max_p_value_feature}')
+      
+      # Fit a new model with the updated set of features
+      model = sm.OLS(y, X).fit()
+
+  return model
